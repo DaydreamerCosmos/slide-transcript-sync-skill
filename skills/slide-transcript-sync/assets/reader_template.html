@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#163c32">
+  <title>课件与讲稿对照</title>
+  <style>
+    :root{--paper:#f7f6ef;--white:#fffefa;--ink:#20392f;--green:#163c32;--green-hover:#265547;--muted:#69766a;--line:#d9ded1;--accent:#dce8cb;--warm:#efede3;--mono:Consolas,"Courier New",monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;--serif:Georgia,"Times New Roman",serif}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:0}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+    body.modal-open{overflow:hidden}
+    a{color:inherit;text-decoration-thickness:1px;text-underline-offset:4px}
+    button,input{font:inherit}
+    button,a,input{-webkit-tap-highlight-color:transparent}
+    button{cursor:pointer}
+    button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #8b9f5c;outline-offset:4px}
+    button:disabled{cursor:default}
+    [hidden]{display:none!important}
+    .skip-link{position:fixed;top:12px;left:16px;background:var(--white);color:var(--green);z-index:100;padding:10px 18px;transform:translateY(-200%)}
+    .skip-link:focus{transform:translateY(0)}
+    .wrap{width:min(1400px,calc(100% - 96px));margin-inline:auto}
+    .appbar{position:sticky;top:0;z-index:20;background:var(--green);color:#f5f7ef}
+    .appbar-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:64px}
+    .brand{display:flex;align-items:center;gap:14px;text-decoration:none;font-size:13px;letter-spacing:.03em;white-space:nowrap}
+    .brand-mark{display:grid;place-items:center;width:29px;height:29px;border:1px solid #a5b6a4;border-radius:50%;font-family:var(--serif);font-size:17px;line-height:1}
+    .brand-divider{width:1px;height:15px;background:#648172}
+    .brand-subtitle{color:#c8d6c8;font-size:12px}
+    .header-actions{display:flex;gap:24px;align-items:center;font-size:12px}
+    .header-actions a{text-decoration:none;color:#e1e9dc}
+    .header-actions a:hover{text-decoration:underline}
+    .reading-progress{height:2px;background:#345448}
+    .reading-progress-fill{height:100%;width:0;background:#d2e6ad;transition:width .15s linear}
+    .hero{padding-block:32px 24px;border-bottom:1px solid var(--line)}
+    .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-size:12px;letter-spacing:.09em;color:var(--muted)}
+    .eyebrow::before{content:"";width:24px;height:1px;background:#668164}
+    h1{font-size:clamp(32px,3.6vw,44px);letter-spacing:-.045em;line-height:1.2;font-weight:600;margin:0 0 14px}
+    .title-en{font-family:var(--serif);font-size:clamp(18px,2vw,25px);font-weight:400;letter-spacing:-.015em;color:#6b766a;margin:0}
+    .hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-top:20px}
+    .meta{display:flex;align-items:center;flex-wrap:wrap;gap:9px 14px;color:var(--muted);font-size:12px}
+    .meta .dot{height:3px;width:3px;background:#93a18d;border-radius:50%}
+    .intro-note{font-size:12px;color:var(--muted);margin:16px 0 0;line-height:1.8}
+    .source-button{display:inline-flex;align-items:center;justify-content:center;gap:16px;flex:none;padding:10px 16px;border:1px solid #aebba6;border-radius:4px;text-decoration:none;font-size:12px}
+    .source-button:hover{background:var(--accent);border-color:#8a9c7e}
+    .tools{padding-block:18px 14px}
+    .tools-first-row{display:flex;gap:20px;align-items:center;justify-content:space-between}
+    .search-wrap{position:relative;display:flex;align-items:center;gap:10px;width:min(530px,100%);border:1px solid #cbd3c3;border-radius:5px;background:var(--white);padding:0 12px;color:var(--muted)}
+    .search-wrap:focus-within{border-color:#657e55;box-shadow:0 0 0 2px #dce5cf}
+    .search-wrap svg{flex:none}
+    #search{min-width:0;width:100%;height:42px;outline:none!important;border:0;background:transparent;color:var(--ink);font-size:13px}
+    #search::placeholder{color:#899181}
+    #clear-search{border:0;background:var(--warm);color:var(--muted);font-size:12px;white-space:nowrap;padding:3px 8px;border-radius:3px}
+    #clear-search:hover{background:var(--accent)}
+    .search-status{min-height:20px;font-size:12px;color:var(--muted);margin:9px 0 0}
+    .tools-info{display:flex;align-items:center;gap:24px;white-space:nowrap}
+    .view-hint{font-size:12px;color:var(--muted)}
+    .toc-toggle{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--green);font-size:13px;padding:8px 0}
+    .toc-toggle svg{transition:transform .2s}
+    .toc-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+    .toc{margin-top:10px;border-top:1px solid var(--line);padding-top:12px;scroll-margin-top:84px}
+    .toc-label{display:block;font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--muted);margin-bottom:12px}
+    .toc-list{display:flex;flex-wrap:wrap;gap:9px 10px;margin:0;padding:0;list-style:none}
+    .toc a{display:flex;align-items:center;gap:10px;padding:7px 11px;background:#eeefe5;border:1px solid transparent;border-radius:4px;text-decoration:none;font-size:12px}
+    .toc a:hover{border-color:#aab8a0;background:#e4ead9}
+    .toc a[aria-current="location"]{color:#f5f7ef;background:var(--green)}
+    .toc-number{font-family:var(--mono);font-size:10px;opacity:.65}
+    .reader-labels{display:grid;grid-template-columns:56fr 44fr;border-bottom:1px solid #b8c4ad;padding:14px 0;font-size:10px;font-weight:600;letter-spacing:.13em;color:var(--muted)}
+    .reader-labels span:first-child{padding-left:20px}
+    .reader-labels span:last-child{padding-left:30px}
+    .slide-row{display:grid;grid-template-columns:minmax(0,56fr) minmax(0,44fr);border-bottom:1px solid #cfd7c5;scroll-margin-top:88px}
+    .visual-column{min-width:0;padding:32px 32px 40px 0}
+    .visual-sticky{position:sticky;top:92px}
+    .slide-heading{display:flex;align-items:flex-start;gap:16px;margin-bottom:15px}
+    .slide-number{font-family:var(--mono);font-size:10px;letter-spacing:.04em;white-space:nowrap;flex:none;background:#e7ebdd;color:#617054;padding:4px 7px;margin-top:2px;border-radius:3px}
+    .slide-title{font-size:18px;line-height:1.55;font-weight:500;letter-spacing:-.025em;margin:0}
+    .slide-figure{margin:0}
+    .image-button{display:block;position:relative;width:100%;padding:0;background:#e5e4df;border:1px solid #d1d5c9;border-radius:4px;overflow:hidden;text-align:inherit;box-shadow:0 3px 10px #25351b08}
+    .slide-image{display:block;width:100%;height:auto;height:auto;object-fit:contain;background:#171e19}
+    .zoom-label{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;align-items:center;background:#fffefae8;color:var(--ink);border:1px solid #d7dece;padding:4px 8px;border-radius:3px;font-size:10px;transition:background .15s}
+    .image-button:hover .zoom-label{background:#fffefa}
+    .image-button:hover{border-color:#829573}
+    .frame-caption{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:#84907d;font-size:10px}
+    .frame-time{font-family:var(--mono);font-variant-numeric:tabular-nums}
+    .transcript-column{min-width:0;border-left:1px solid #e0e4d8;padding:33px 0 40px 30px}
+    .transcript-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:10px;margin-bottom:23px;min-height:25px}
+    .range-link{display:inline-flex;align-items:center;gap:7px;color:#587348;font-family:var(--mono);font-size:11px;text-decoration:none;font-variant-numeric:tabular-nums;background:#e9eddc;border-radius:3px;padding:4px 8px}
+    .range-link:hover{background:#dce6c8}
+    .transcript-label{font-size:10px;letter-spacing:.06em;color:#899381}
+    .paragraph{margin-bottom:23px}
+    .paragraph:last-child{margin-bottom:0}
+    .paragraph-time{display:inline-block;font-family:var(--mono);font-size:10px;line-height:1.4;font-variant-numeric:tabular-nums;color:#7e8b74;text-decoration:none;margin-bottom:7px}
+    .paragraph-time:hover{color:#36502e;text-decoration:underline}
+    .paragraph p{font-family:var(--serif);color:#3d493c;font-size:17px;line-height:1.78;overflow-wrap:anywhere;margin:0}
+    mark{background:#e2eab1;color:inherit;padding:1px 0;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+    .empty-state{padding:68px 24px;text-align:center;border-bottom:1px solid var(--line)}
+    .empty-state p{color:var(--muted);font-size:13px;margin:10px 0 20px}
+    .empty-state strong{font-size:22px;font-weight:500}
+    .empty-state button{border:1px solid #b7c2ac;border-radius:4px;background:var(--white);color:var(--green);padding:8px 18px;font-size:12px}
+    .page-footer{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-block:33px 50px;font-size:11px;color:var(--muted)}
+    .footer-note{margin:0;line-height:1.9}
+    .footer-link{white-space:nowrap;text-decoration:none}
+    .footer-link:hover{text-decoration:underline}
+    .to-top{position:fixed;bottom:24px;right:20px;width:39px;height:39px;display:grid;place-items:center;border:1px solid #bfccb4;background:#f7f8eef2;color:var(--green);border-radius:50%;box-shadow:0 2px 12px #243a1920;z-index:15;text-decoration:none;font-size:17px}
+    .to-top:hover{background:var(--accent)}
+    .lightbox{width:min(1480px,calc(100vw - 56px));max-width:none;max-height:calc(100dvh - 40px);padding:0;border:1px solid #78856c;border-radius:6px;background:#15251d;color:#f3f5eb;box-shadow:0 20px 120px #0007;overflow:auto}
+    .lightbox::backdrop{background:#0d1c16df;backdrop-filter:blur(3px)}
+    .lightbox-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:13px 17px}
+    .lightbox-title{font-size:13px;font-weight:400;margin:0}
+    .lightbox-close{display:grid;place-items:center;flex:none;width:32px;height:32px;border:1px solid #657160;border-radius:50%;background:transparent;color:#f3f5eb;font-size:21px;line-height:1}
+    .lightbox-close:hover{background:#3c5140}
+    .lightbox-image{display:block;max-width:100%;width:100%;max-height:calc(100dvh - 150px);object-fit:contain;background:#080e0a}
+    .lightbox-caption{margin:0;padding:11px 17px;color:#aebca5;font-size:11px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .error-state{margin:40px auto;padding:25px;max-width:680px;border:1px solid #c4b9a8;background:#faf4e8;color:#61543c;border-radius:4px;font-size:14px}
+    @media(min-width:1650px){.wrap{width:min(1512px,calc(100% - 144px))}.paragraph p{font-size:18px}.slide-title{font-size:20px}.visual-column{padding-right:42px}.transcript-column{padding-left:40px}.reader-labels span:last-child{padding-left:40px}}
+    @media(max-width:1050px){.wrap{width:calc(100% - 56px)}.visual-column{padding-right:23px}.transcript-column{padding-left:23px}.reader-labels span:last-child{padding-left:23px}.paragraph p{font-size:16px}.slide-heading{gap:10px}.slide-title{font-size:16px}.view-hint{display:none}.hero{padding-top:50px}}
+    @media(max-width:800px){html{scroll-padding-top:85px}.wrap{width:calc(100% - 36px)}.appbar-inner{min-height:57px}.header-actions{gap:13px}.brand{gap:9px;font-size:12px}.brand-subtitle,.brand-divider{display:none}.hero{padding-block:36px 28px}.eyebrow{font-size:11px;margin-bottom:14px}.hero-bottom{margin-top:23px;align-items:flex-start;flex-direction:column;gap:20px}.meta{font-size:11px;gap:8px 10px}.intro-note{font-size:11px;max-width:460px}.source-button{font-size:11px;padding:8px 13px}.tools{padding-block:22px 14px}.tools-first-row{gap:14px;align-items:flex-start}.search-wrap{flex:1;gap:8px;padding-inline:10px}.tools-info{padding-top:3px}.toc-toggle{font-size:12px;white-space:nowrap;gap:4px}#search{height:40px;font-size:12px}.toc-list{gap:7px}.toc a{font-size:11px;padding:6px 9px}.reader-labels{display:none}.slide-row{display:block;scroll-margin-top:75px;border-top:1px solid var(--line);border-bottom:0}.visual-column{padding:24px 0 0}.visual-sticky{position:static}.slide-title{font-size:18px}.slide-heading{gap:12px;margin-bottom:13px}.slide-number{font-size:10px}.frame-caption{margin-top:8px}.transcript-column{border-left:0;padding:23px 0 30px}.transcript-head{margin-bottom:16px}.paragraph{margin-bottom:20px}.paragraph p{font-size:17px;line-height:1.8}.page-footer{border-top:1px solid var(--line);padding-block:25px 40px;font-size:10px;align-items:flex-start}.lightbox{width:calc(100vw - 18px);max-height:calc(100dvh - 24px)}.lightbox-head{padding:10px 12px}.lightbox-title{font-size:12px}.lightbox-caption{font-size:10px;padding:10px 12px}.to-top{right:13px;bottom:15px;width:35px;height:35px}}
+    @media(max-width:430px){.header-actions .header-source{display:none}.title-en{font-size:19px}.intro-note{line-height:1.85}.tools-first-row{gap:12px}.toc-toggle svg{width:13px}.paragraph p{font-size:16px}.page-footer{flex-direction:column;gap:15px}}
+    @media(max-width:800px){html{scroll-padding-top:0}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+    @media print{.appbar,.tools,.to-top,.zoom-label,.skip-link,.lightbox,.header-actions,.source-button{display:none!important}.wrap{width:100%}.hero{padding-block:0 20px}.slide-row{break-inside:avoid;display:block}.visual-sticky{position:static}.visual-column{padding:20px 0 0}.transcript-column{border:0;padding:20px 0}.slide-image{max-height:360px}.reader-labels{display:none}.paragraph p{font-size:12px}.paragraph{margin-bottom:12px}.page-footer{padding-top:20px}body{background:white}.range-link{background:none}}
+  </style>
+</head>
+<body id="top">
+  <a class="skip-link" href="#reader">跳到课件与讲稿</a>
+  <header class="appbar">
+    <div class="wrap appbar-inner">
+      <a class="brand" href="#top" aria-label="返回本讲顶部"><span class="brand-mark" aria-hidden="true">S</span><span id="course-brand">课程阅读</span><span class="brand-divider" aria-hidden="true"></span><span class="brand-subtitle">课件 × 讲稿</span></a>
+      <div class="header-actions"><a href="#contents" id="header-contents">本讲目录</a><a class="header-source" id="header-source" target="_blank" rel="noopener noreferrer">观看原视频 <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <div class="reading-progress" aria-hidden="true"><div class="reading-progress-fill" id="reading-progress"></div></div>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="lecture-title">
+      <p class="eyebrow" id="course-eyebrow"></p>
+      <h1 id="lecture-title">课件与讲稿对照</h1>
+      <p class="title-en" id="lecture-title-en" lang="en"></p>
+      <div class="hero-bottom">
+        <div>
+          <div class="meta" id="lecture-meta"></div>
+          <p class="intro-note" id="source-note"></p>
+        </div>
+        <a class="source-button" id="video-source" target="_blank" rel="noopener noreferrer"><span>查看原始来源</span><span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+    <section class="tools" aria-label="检索和导航">
+      <div class="tools-first-row">
+        <div class="search-wrap" role="search">
+          <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+          <label for="search" class="sr-only">检索本讲标题与原文讲稿</label>
+          <input id="search" type="search" placeholder="检索标题或原文讲稿…" autocomplete="off" spellcheck="false" aria-controls="reader" aria-describedby="search-status">
+          <button id="clear-search" type="button" hidden>清空</button>
+        </div>
+        <div class="tools-info">
+          <span class="view-hint">逐页对照 · 点击画面可放大</span>
+          <button class="toc-toggle" id="toc-toggle" type="button" aria-expanded="true" aria-controls="contents"><span>章节目录</span><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+      </div>
+      <p id="search-status" class="search-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <nav class="toc" id="contents" aria-label="本讲章节目录">
+        <span class="toc-label">本讲目录 / CONTENTS</span>
+        <ol class="toc-list" id="toc-list"></ol>
+      </nav>
+    </section>
+    <div class="reader-labels" aria-hidden="true"><span>课件画面 / SLIDES</span><span>原文讲稿 / TRANSCRIPT</span></div>
+    <div id="reader" tabindex="-1" aria-label="课件与讲稿对照"></div>
+    <div class="empty-state" id="empty-state" hidden><strong>没有找到匹配内容</strong><p>试试其他关键词，或清空搜索查看全部画面。</p><button id="empty-clear" type="button">清空搜索</button></div>
+    <footer class="page-footer"><p class="footer-note">课件与讲稿对照阅读 · 时间边界为近似语义对应。</p><a class="footer-link" id="footer-source" target="_blank" rel="noopener noreferrer">原始视频 <span aria-hidden="true">↗</span></a></footer>
+  </main>
+  <a class="to-top" id="to-top" href="#top" aria-label="回到顶部" title="回到顶部" hidden>↑</a>
+  <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title" aria-describedby="lightbox-caption">
+    <div class="lightbox-head"><h2 class="lightbox-title" id="lightbox-title"></h2><button class="lightbox-close" id="lightbox-close" type="button" aria-label="关闭放大画面" autofocus>×</button></div>
+    <img class="lightbox-image" id="lightbox-image" alt="">
+    <p class="lightbox-caption" id="lightbox-caption"></p>
+  </dialog>
+  <script id="lecture-data" type="application/json">__LECTURE_DATA__</script>
+  <script>
+  (() => {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    let lecture;
+    try {
+      lecture = JSON.parse($('lecture-data').textContent);
+      if (!Array.isArray(lecture.slides) || !Array.isArray(lecture.chapters)) throw new Error('Invalid lecture data');
+    } catch (error) {
+      const message = document.createElement('p');
+      message.className = 'error-state';
+      message.textContent = '本讲内容暂时无法读取，请重新打开完整的网页文件。';
+      $('reader').append(message);
+      console.error('Unable to read lecture data:', error);
+      return;
+    }
+
+    const slides = lecture.slides;
+    const slideMap = new Map(slides.map((slide) => [slide.id, slide]));
+    const rowElements = new Map();
+    const searchableElements = [];
+    const tocLinks = new Map();
+    let searchTimer;
+    let lastOpener = null;
+    let scrollQueued = false;
+    const normalise = (text) => String(text || '').toLocaleLowerCase();
+    const seconds = (value) => Math.max(0, Number(value) || 0);
+    const formatTime = (value) => {
+      const whole = Math.floor(seconds(value));
+      const h = Math.floor(whole / 3600);
+      const m = Math.floor((whole % 3600) / 60);
+      const s = whole % 60;
+      return h ? h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0') : String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    };
+    const safeSource = (() => {
+      try {
+        const url = new URL(lecture.sourceUrl);
+        if (url.protocol === 'https:' || url.protocol === 'http:') return url.href;
+      } catch (_) { /* Use the video identifier when a source URL is absent. */ }
+      return lecture.videoId ? 'https://www.youtube.com/watch?v=' + encodeURIComponent(lecture.videoId) : ''; 
+    })();
+    const videoLink = (time) => {
+      if (time === null || time === undefined) return '';
+      if (lecture.videoUrlTemplate) {
+        try {
+          const url = new URL(lecture.videoUrlTemplate.replaceAll('{seconds}', String(Math.floor(seconds(time)))));
+          if (['https:', 'http:'].includes(url.protocol)) return url.href;
+        } catch (_) { /* Invalid external link: keep the timestamp as plain text. */ }
+      }
+      if (!lecture.videoId) return '';
+      const url = new URL('https://www.youtube.com/watch');
+      url.searchParams.set('v', lecture.videoId);
+      url.searchParams.set('t', String(Math.floor(seconds(time))) + 's');
+      return url.href;
+    };
+    const imageSource = (slide) => lecture.sourceMode === 'pdf'
+      ? (slide.sourcePage ? 'PDF 第 ' + slide.sourcePage + ' 页' : 'PDF 课件页')
+      : (slide.frameTime === null || slide.frameTime === undefined ? '视频课件画面' : '视频取帧 ' + formatTime(slide.frameTime));
+    const make = (tag, className, text) => {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined && text !== null) element.textContent = String(text);
+      return element;
+    };
+    const timeAnchor = (time, className, label) => {
+      const link = videoLink(time);
+      const anchor = make(link ? 'a' : 'span', className, label || formatTime(time));
+      if (!link) return anchor;
+      anchor.href = link;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      anchor.title = '从 ' + formatTime(time) + ' 播放（新标签页）';
+      anchor.setAttribute('aria-label', anchor.title);
+      return anchor;
+    };
+    const searchableText = (element, text, slideId) => {
+      const original = String(text || '');
+      element.textContent = original;
+      searchableElements.push({ element, original, normalised: normalise(original), slideId });
+    };
+
+    $('lecture-title').textContent = lecture.title || '课件与讲稿对照';
+    $('lecture-title-en').textContent = lecture.titleEn || '';
+    document.title = [lecture.title, lecture.courseTitle, lecture.lectureLabel].filter(Boolean).join(' · ') || '课件与讲稿对照';
+    for (const id of ['header-source', 'video-source', 'footer-source']) {
+      if (safeSource) $(id).href = safeSource; else $(id).hidden = true;
+    }
+    $('course-brand').textContent = lecture.courseTitle || '课程阅读';
+    document.querySelector('.brand-mark').textContent = Array.from(lecture.courseTitle || '课')[0];
+    $('course-eyebrow').textContent = [lecture.courseTitle, lecture.lectureLabel].filter(Boolean).join(' · ');
+    const transcriptLabel = lecture.transcriptLabel || '原文讲稿';
+    document.querySelector('.reader-labels span:last-child').textContent = transcriptLabel + ' / TRANSCRIPT';
+    $('search').placeholder = '检索标题或' + transcriptLabel + '…';
+    $('source-note').textContent = (lecture.sourceMode === 'pdf' ? 'PDF 课件版' : '视频画面版') + '：配对' + transcriptLabel + '；分段时间为近似对应。' + (lecture.captionSource ? '字幕来源：' + lecture.captionSource + '。' : '');
+    const metadata = [lecture.instructor, formatTime(lecture.duration), slides.length + ' 个画面', transcriptLabel];
+    for (const value of metadata.filter(Boolean)) {
+      if ($('lecture-meta').children.length) $('lecture-meta').append(make('span', 'dot'));
+      $('lecture-meta').append(make('span', '', value));
+    }
+
+    const setContents = (expanded) => {
+      $('toc-toggle').setAttribute('aria-expanded', String(expanded));
+      $('contents').hidden = !expanded;
+    };
+    $('toc-toggle').addEventListener('click', () => setContents($('contents').hidden));
+    $('header-contents').addEventListener('click', () => setContents(true));
+
+    lecture.chapters.forEach((chapter, index) => {
+      const target = slideMap.has(chapter.firstSlide) ? chapter.firstSlide : slides.find((slide) => slide.chapter === chapter.id)?.id;
+      if (!target) return;
+      const item = make('li');
+      const link = make('a');
+      link.href = '#' + target;
+      link.append(make('span', 'toc-number', String(index + 1).padStart(2, '0')), make('span', '', chapter.title));
+      link.addEventListener('click', () => {
+        if ($('search').value) clearSearch(false);
+        const row = rowElements.get(target);
+        if (row) {
+          row.focus({ preventScroll: true });
+          row.scrollIntoView({ block: 'start' });
+        }
+      });
+      item.append(link);
+      $('toc-list').append(item);
+      tocLinks.set(chapter.id, link);
+    });
+
+    const openLightbox = (slide, index, opener) => {
+      lastOpener = opener;
+      $('lightbox-title').textContent = '画面 ' + String(index + 1).padStart(2, '0') + ' · ' + slide.title;
+      $('lightbox-image').src = slide.image;
+      $('lightbox-image').alt = slide.title + '，' + imageSource(slide);
+      $('lightbox-caption').textContent = imageSource(slide) + ' · 按 Esc 或点击画面外侧关闭';
+      document.body.classList.add('modal-open');
+      $('lightbox').showModal();
+      $('lightbox-close').focus();
+    };
+    $('lightbox-close').addEventListener('click', () => $('lightbox').close());
+    $('lightbox').addEventListener('click', (event) => {
+      if (event.target !== $('lightbox')) return;
+      const bounds = $('lightbox').getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) $('lightbox').close();
+    });
+    $('lightbox').addEventListener('close', () => {
+      document.body.classList.remove('modal-open');
+      if (lastOpener?.isConnected && !lastOpener.closest('[hidden]')) lastOpener.focus({ preventScroll: true });
+    });
+
+    const fragment = document.createDocumentFragment();
+    slides.forEach((slide, index) => {
+      const row = make('article', 'slide-row');
+      row.id = slide.id;
+      row.tabIndex = -1;
+      row.setAttribute('aria-labelledby', slide.id + '-title');
+      row.dataset.chapter = slide.chapter || '';
+
+      const visual = make('div', 'visual-column');
+      const sticky = make('div', 'visual-sticky');
+      const heading = make('div', 'slide-heading');
+      const title = make('h2', 'slide-title');
+      title.id = slide.id + '-title';
+      searchableText(title, slide.title, slide.id);
+      heading.append(make('span', 'slide-number', '画面 ' + String(index + 1).padStart(2, '0')), title);
+      const figure = make('figure', 'slide-figure');
+      const imageButton = make('button', 'image-button');
+      imageButton.type = 'button';
+      imageButton.setAttribute('aria-label', '放大画面 ' + String(index + 1).padStart(2, '0') + '：' + slide.title);
+      imageButton.setAttribute('aria-haspopup', 'dialog');
+      const image = make('img', 'slide-image');
+      image.src = slide.image;
+      image.alt = slide.title + ' — ' + imageSource(slide);
+      image.loading = index < 2 ? 'eager' : 'lazy';
+      image.decoding = 'async';
+      if (!index) image.fetchPriority = 'high';
+      imageButton.append(image, make('span', 'zoom-label', '⤢  放大画面'));
+      imageButton.addEventListener('click', () => openLightbox(slide, index, imageButton));
+      const caption = make('figcaption', 'frame-caption');
+      caption.append(make('span', '', imageSource(slide)));
+      if (slide.reviewNote) caption.append(make('span', 'frame-time', slide.reviewNote));
+      figure.append(imageButton, caption);
+      sticky.append(heading, figure);
+      visual.append(sticky);
+
+      const transcript = make('div', 'transcript-column');
+      transcript.lang = lecture.transcriptLanguage || 'und';
+      const transcriptHead = make('div', 'transcript-head');
+      transcriptHead.append(slide.start == null ? make('span', 'range-link', '待核实对应时间') : timeAnchor(slide.start, 'range-link', formatTime(slide.start) + ' – ' + formatTime(slide.end)), make('span', 'transcript-label', 'TRANSCRIPT'));
+      transcript.append(transcriptHead);
+      for (const paragraph of (slide.paragraphs || [])) {
+        const block = make('div', 'paragraph');
+        const text = make('p');
+        searchableText(text, paragraph.text, slide.id);
+        block.append(timeAnchor(paragraph.start, 'paragraph-time'), text);
+        transcript.append(block);
+      }
+      if (!slide.paragraphs?.length) {
+        const noTranscript = make('p', 'intro-note', '此画面尚无独立匹配的讲稿片段。');
+        noTranscript.lang = 'zh-CN';
+        transcript.append(noTranscript);
+      }
+      row.append(visual, transcript);
+      rowElements.set(slide.id, row);
+      fragment.append(row);
+    });
+    $('reader').append(fragment);
+
+    const highlight = (record, query) => {
+      if (!query) {
+        if (record.element.textContent !== record.original || record.element.childNodes.length !== 1) record.element.textContent = record.original;
+        return 0;
+      }
+      let from = 0;
+      let at = record.normalised.indexOf(query);
+      if (at === -1) {
+        record.element.textContent = record.original;
+        return 0;
+      }
+      let matches = 0;
+      const content = document.createDocumentFragment();
+      while (at !== -1) {
+        content.append(document.createTextNode(record.original.slice(from, at)));
+        content.append(make('mark', '', record.original.slice(at, at + query.length)));
+        from = at + query.length;
+        matches++;
+        at = record.normalised.indexOf(query, from);
+      }
+      content.append(document.createTextNode(record.original.slice(from)));
+      record.element.replaceChildren(content);
+      return matches;
+    };
+    const applySearch = () => {
+      clearTimeout(searchTimer);
+      const rawQuery = $('search').value.trim();
+      const query = normalise(rawQuery);
+      const visibleIds = new Set();
+      let matchCount = 0;
+      for (const record of searchableElements) {
+        const count = highlight(record, query);
+        matchCount += count;
+        if (!query || count) visibleIds.add(record.slideId);
+      }
+      for (const [id, row] of rowElements) row.hidden = query ? !visibleIds.has(id) : false;
+      $('clear-search').hidden = !$('search').value;
+      $('empty-state').hidden = !query || visibleIds.size > 0;
+      $('search-status').textContent = query ? '找到 ' + matchCount + ' 处匹配 · 显示 ' + visibleIds.size + ' / ' + slides.length + ' 个画面' : '共 ' + slides.length + ' 个画面' + (videoLink(0) ? ' · 时间链接可跳转到视频对应位置' : ' · 时间戳供对照阅读');
+      updateProgress();
+    };
+    const clearSearch = (focusInput = true) => {
+      clearTimeout(searchTimer);
+      $('search').value = '';
+      applySearch();
+      if (focusInput) $('search').focus({ preventScroll: true });
+    };
+    $('search').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(applySearch, 140);
+    });
+    $('search').addEventListener('search', applySearch);
+    $('search').addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        clearSearch();
+      }
+      if (event.key === 'Enter') applySearch();
+    });
+    $('clear-search').addEventListener('click', () => clearSearch());
+    $('empty-clear').addEventListener('click', () => clearSearch());
+
+    function updateProgress() {
+      const extent = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = extent > 0 ? Math.max(0, Math.min(100, window.scrollY / extent * 100)) : 0;
+      $('reading-progress').style.width = progress + '%';
+      $('to-top').hidden = window.scrollY < 650;
+      let activeChapter = null;
+      for (const row of rowElements.values()) {
+        if (row.hidden) continue;
+        const bounds = row.getBoundingClientRect();
+        if (bounds.top <= 180) activeChapter = row.dataset.chapter;
+        else break;
+      }
+      for (const [id, link] of tocLinks) {
+        if (id === activeChapter) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    }
+    window.addEventListener('scroll', () => {
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(() => {
+        updateProgress();
+        scrollQueued = false;
+      });
+    }, { passive: true });
+    window.addEventListener('resize', updateProgress, { passive: true });
+    window.addEventListener('load', updateProgress);
+    applySearch();
+    if (location.hash) {
+      try {
+        const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant', block: 'start' }));
+      } catch (_) { /* Invalid fragments do not affect reading. */ }
+    }
+  })();
+  </script>
+</body>
+</html>
